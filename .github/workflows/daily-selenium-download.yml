@@ -30,4 +30,6 @@ jobs:
         env:
           CHROME_BIN: /usr/bin/chromium-browser
           CHROMEDRIVER_PATH: /usr/bin/chromedriver
+          QLIK_USER: ${{ secrets.QLIK_USER }}
+          QLIK_PASSWORD: ${{ secrets.QLIK_PASSWORD }}
         run: python scripts/selenium_login_only.py
