@@ -26,33 +26,33 @@ OUT_DIR = Path("/tmp")
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 opts = Options()
 
-# Usamos modo headless; en GitHub Actions la ruta del binario será
-especificada en workflow
+# Usamos modo headless; en GitHub Actions la ruta del binario será especificada en workflow
 opts.add_argument("--headless=new")
 opts.add_argument("--no-sandbox")
 opts.add_argument("--disable-dev-shm-usage")
 opts.add_argument("--disable-gpu")
-# Si necesitas cambiar la ruta del binario (en Actions se establece), puedes
-hacerlo:
+# Si necesitas cambiar la ruta del binario (en Actions se establece), puedes hacerlo:
 # opts.binary_location = "/usr/bin/chromium-browser"
+
 # crea driver
 driver = webdriver.Chrome(options=opts)
 try:
-print("Abriendo login...", LOGIN)
-driver.get(LOGIN)
-time.sleep(1)
-# Rellenar formulario
-driver.find_element(By.ID, "username").send_keys("tomsmith")
-driver.find_element(By.ID, "password").send_keys("SuperSecretPassword!")
-driver.find_element(By.XPATH, "//button[contains(text(),'Login')]").click()
-time.sleep(2)
+    print("Abriendo login...", LOGIN)
+    driver.get(LOGIN)
+    time.sleep(1)
+    # Rellenar formulario
+    driver.find_element(By.ID, "username").send_keys("tomsmith")
+    driver.find_element(By.ID, "password").send_keys("SuperSecretPassword!")
+    driver.find_element(By.XPATH, "//button[contains(text(),'Login')]").click()
+    time.sleep(2)
 
-# Comprobación rápida: buscar message de success
-try:
-    flash = driver.find_element(By.ID, "flash").text
-    print("Flash:", flash.strip())
+    # Comprobación rápida: buscar message de success
+    try:
+        flash = driver.find_element(By.ID, "flash").text
+        print("Flash:", flash.strip())
     except Exception:
-    print("No se encontró flash (ok).")
+        print("No se encontró flash (ok).")
+
     # Ir a la página de descarga
     driver.get(DOWNLOAD_PAGE)
     time.sleep(1)
@@ -72,11 +72,12 @@ try:
     out_path = OUT_DIR / name
     out_path.write_bytes(r.content)
     print("Guardado en:", out_path)
-    except Exception as e:
-        print("Error durante el flujo:", e)
-        raise
-    finally:
-        try:
-            driver.quit()
-        except Exception:
-            pass
+
+except Exception as e:
+    print("Error durante el flujo:", e)
+    raise
+finally:
+    try:
+        driver.quit()
+    except Exception:
+        pass

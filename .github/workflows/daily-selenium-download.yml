@@ -1,51 +1,40 @@
-
-
 on:
-schedule:
-- cron: '0 8 * * *' # ejecuta cada día a las 08:00 UTC
-workflow_dispatch: {}
-
+  schedule:
+    - cron: '0 8 * * *' # ejecuta cada día a las 08:00 UTC
+  workflow_dispatch: {}
 
 jobs:
-run-download:
-runs-on: ubuntu-latest
+  run-download:
+    runs-on: ubuntu-latest
 
+    steps:
+      - uses: actions/checkout@v4
 
-steps:
-- uses: actions/checkout@v4
+      - name: Install system deps (Chromium & Chromedriver)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y chromium-browser chromium-chromedriver
 
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
 
-- name: Install system deps (Chromium & Chromedriver)
-run: |
-sudo apt-get update
-sudo apt-get install -y chromium-browser chromium-chromedriver
+      - name: Install Python packages
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
 
+      - name: Run selenium script
+        env:
+          CHROME_BIN: /usr/bin/chromium-browser
+        run: |
+          echo "Using CHROME_BIN=$CHROME_BIN"
+          export CHROME_BIN=/usr/bin/chromium-browser
+          python scripts/selenium_login_and_download.py
 
-- name: Set up Python
-uses: actions/setup-python@v4
-with:
-python-version: '3.11'
-
-
-- name: Install Python packages
-run: |
-python -m pip install --upgrade pip
-pip install -r requirements.txt
-
-
-- name: Run selenium script
-# Exportamos variable para que el script pueda localizar el binario si fuera necesario
-env:
-CHROME_BIN: /usr/bin/chromium-browser
-run: |
-echo "Using CHROME_BIN=$CHROME_BIN"
-# Por si tu script necesita conocer la ubicación, exportamos PATH
-export CHROME_BIN=/usr/bin/chromium-browser
-python scripts/selenium_login_and_download.py
-
-
-- name: Upload downloaded file as artifact
-uses: actions/upload-artifact@v4
-with:
-name: demo-downloaded-file
-path: /tmp/*
+      - name: Upload downloaded file as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: demo-downloaded-file
+          path: /tmp/*
