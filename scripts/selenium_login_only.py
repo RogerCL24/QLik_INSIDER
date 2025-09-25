@@ -30,7 +30,7 @@ try:
 
     # Rellenar credenciales desde GitHub Secrets
     username.send_keys(os.environ["QLIK_USER"])
-    password.send_keys(os.environ["QLIK_PASS"])
+    password.send_keys(os.environ["QLIK_PASSWORD"])
     login_btn.click()
 
     # ---- Check 1: mensaje de error ----
