@@ -5,7 +5,6 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-import hashlib
 
 opts = Options()
 opts.add_argument("--headless=new")
@@ -27,10 +26,6 @@ try:
     username = wait.until(EC.presence_of_element_located((By.ID, "username-input")))
     password = driver.find_element(By.ID, "password-input")
     login_btn = driver.find_element(By.ID, "loginbtn")
-
-    # Mostrar usuario y hash parcial de la contraseña para verificar que se están usando los correctos
-    print("Usuario:", os.environ["QLIK_USER"])
-    print("Password hash:", hashlib.sha256(os.environ["QLIK_PASSWORD"].encode()).hexdigest()[:10])
 
     username.send_keys(os.environ["QLIK_USER"])
     password.send_keys(os.environ["QLIK_PASSWORD"])
