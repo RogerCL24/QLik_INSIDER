@@ -17,7 +17,7 @@ driver = webdriver.Chrome(service=service, options=opts)
 
 try:
     # URL del login de Qlik
-    url = "https://tu-servidor-qlik.com/login"  # <-- cámbialo por tu URL real
+    url = "https://qliksense.candy.it/hub/stream/59bf718f-396a-4625-b61c-5233bf946956"  # <-- cámbialo por tu URL real
     driver.get(url)
 
     print("Página cargada:", driver.title)
