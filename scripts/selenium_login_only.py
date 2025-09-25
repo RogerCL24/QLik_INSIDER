@@ -23,13 +23,17 @@ try:
 
 
     # Campos de login
-    username = wait.until(EC.presence_of_element_located((By.ID, "username-input")))
-    password = driver.find_element(By.ID, "password-input")
-    login_btn = driver.find_element(By.ID, "loginbtn")
-
+    username = wait.until(EC.element_to_be_clickable((By.ID, "username-input")))
+    username.clear()
     username.send_keys(os.environ["QLIK_USER"])
+
+    password = wait.until(EC.element_to_be_clickable((By.ID, "password-input")))
+    password.clear()
     password.send_keys(os.environ["QLIK_PASSWORD"])
+
+    login_btn = wait.until(EC.element_to_be_clickable((By.ID, "loginbtn")))
     login_btn.click()
+
 
     # ---- Check 1: error-message ----
     try:
