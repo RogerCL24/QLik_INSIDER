@@ -2,7 +2,7 @@ name: Selenium demo
 
 on:
   schedule:
-    - cron: '0 8 * * *' # cada día a las 08:00 UTC
+    - cron: '0 8 * * *' # cada día a las 08:00 UTC (10:00 hora de Madrid)
   workflow_dispatch: {}
 
 jobs:
