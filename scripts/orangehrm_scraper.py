@@ -55,20 +55,23 @@ try:
 
     print("Entramos en Directory...")
 
-    # ---- Esperar a la tabla ----
-    wait.until(EC.presence_of_element_located((By.CLASS_NAME, "oxd-table")))
+    # Esperar a que existan tarjetas de empleados
+    wait.until(EC.presence_of_all_elements_located((By.CLASS_NAME, "orangehrm-directory-card")))
 
-    rows = driver.find_elements(By.CSS_SELECTOR, ".oxd-table-body .oxd-table-row")
-    print(f"Se encontraron {len(rows)} empleados")
-    # ---- Extraer datos ----
+    cards = driver.find_elements(By.CLASS_NAME, "orangehrm-directory-card")
+    print(f"Se encontraron {len(cards)} empleados")
+
     employees = []
-    for row in rows:
+    for card in cards:
         try:
-            name = row.find_element(By.CSS_SELECTOR, "div:nth-child(2)").text
-            job_title = row.find_element(By.CSS_SELECTOR, "div:nth-child(3)").text
-            location = row.find_element(By.CSS_SELECTOR, "div:nth-child(4)").text
+            name = card.find_element(By.CSS_SELECTOR, ".orangehrm-directory-card-header").text
+            # en cada card también aparece el job title y location, pero en otras etiquetas <p>
+            info = card.find_elements(By.CSS_SELECTOR, "p.oxd-text")
+            job_title = info[1].text if len(info) > 1 else ""
+            location = info[2].text if len(info) > 2 else ""
             employees.append([name, job_title, location])
-        except:
+        except Exception as e:
+            print("Error en card:", e)
             continue
 
     # ---- Guardar en CSV ----
