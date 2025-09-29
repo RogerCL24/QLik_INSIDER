@@ -1,4 +1,4 @@
-name: Selenium demo
+name: Selenium OrangeHRM Demo
 
 on:
   schedule:
@@ -26,10 +26,14 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Run Selenium login script
+      - name: Run Selenium OrangeHRM script
         env:
           CHROME_BIN: /usr/bin/chromium-browser
           CHROMEDRIVER_PATH: /usr/bin/chromedriver
-          QLIK_USER: ${{ secrets.QLIK_USER }}
-          QLIK_PASSWORD: ${{ secrets.QLIK_PASSWORD }}
-        run: python scripts/selenium_login_only.py
+        run: python scripts/orangehrm_scraper.py
+
+      - name: Upload employees.csv as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: employees-data
+          path: output/employees.csv

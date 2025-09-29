@@ -1,4 +1,5 @@
 import os
+import csv
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
@@ -15,53 +16,62 @@ service = Service("/usr/bin/chromedriver")
 driver = webdriver.Chrome(service=service, options=opts)
 
 try:
-    url = "https://qliksense.candy.it/login"  # tu URL real
+    url = "https://opensource-demo.orangehrmlive.com/web/index.php/auth/login"
     driver.get(url)
 
     print("Página cargada:", driver.title)
     wait = WebDriverWait(driver, 15)
 
-
-    # Campos de login
-    username = wait.until(EC.element_to_be_clickable((By.ID, "username-input")))
+    # ---- Login ----
+    username = wait.until(EC.element_to_be_clickable((By.NAME, "username")))
     username.clear()
-    username.send_keys(os.environ["QLIK_USER"])
+    username.send_keys("Admin")
 
-    password = wait.until(EC.element_to_be_clickable((By.ID, "password-input")))
+    password = driver.find_element(By.NAME, "password")
     password.clear()
-    password.send_keys(os.environ["QLIK_PASSWORD"])
+    password.send_keys("admin123")
 
-    login_btn = wait.until(EC.element_to_be_clickable((By.ID, "loginbtn")))
+    login_btn = driver.find_element(By.CSS_SELECTOR, "button[type='submit']")
     login_btn.click()
 
+    print("Login realizado...")
 
-    # ---- Check 1: error-message ----
-    try:
-        error_box = wait.until(EC.presence_of_element_located((By.ID, "error-message")))
-        error_text = error_box.text.strip()
-        if error_text:
-            print("❌ Error en login:", error_text)
-        else:
-            print("✅ No se mostró mensaje de error inmediato")
-    except:
-        print("⚠️ No se encontró cuadro de error")
+    # ---- Ir a Directory ----
+    directory_menu = wait.until(
+        EC.element_to_be_clickable((By.LINK_TEXT, "Directory"))
+    )
+    directory_menu.click()
 
-    # ---- Check 2: URL ----
-    current_url = driver.current_url
-    print("URL actual:", current_url)
-    if "login" in current_url.lower():
-        print("❌ Seguimos en login (fallo probable)")
-    elif "internal_forms_authentication" in current_url.lower():
-        print("⚠️ Redirigió a internal_forms_authentication (login fallido o repetido)")
-    else:
-        print("✅ La URL cambió, parece login exitoso")
+    print("Entramos en Directory...")
 
-    # ---- Check 3: hub ----
-    try:
-        wait.until(EC.presence_of_element_located((By.ID, "hub")))
-        print("✅ Hub detectado, login exitoso")
-    except:
-        print("⚠️ No se detectó hub")
+    # ---- Esperar a la tabla ----
+    table_rows = wait.until(
+        EC.presence_of_all_elements_located(
+            (By.CSS_SELECTOR, "div.oxd-table-body div.oxd-table-card")
+        )
+    )
+
+    print(f"Encontradas {len(table_rows)} filas de empleados")
+
+    # ---- Extraer datos ----
+    employees = []
+    for row in table_rows:
+        try:
+            name = row.find_element(By.CSS_SELECTOR, "div:nth-child(2)").text
+            job_title = row.find_element(By.CSS_SELECTOR, "div:nth-child(3)").text
+            location = row.find_element(By.CSS_SELECTOR, "div:nth-child(4)").text
+            employees.append([name, job_title, location])
+        except:
+            continue
+
+    # ---- Guardar en CSV ----
+    os.makedirs("output", exist_ok=True)
+    with open("output/employees.csv", "w", newline="", encoding="utf-8") as f:
+        writer = csv.writer(f)
+        writer.writerow(["Name", "Job Title", "Location"])
+        writer.writerows(employees)
+
+    print(f"Datos guardados en output/employees.csv ({len(employees)} empleados)")
 
 finally:
     driver.quit()
