@@ -35,6 +35,9 @@ try:
     login_btn.click()
 
     print("Login realizado...")
+    
+    print("URL actual tras login:", driver.current_url)
+    print("HTML visible:\n", driver.page_source[:1000])
 
     # ---- Ir a Directory ----
     directory_menu = wait.until(
