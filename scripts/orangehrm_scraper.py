@@ -1,5 +1,6 @@
 import os
 import csv
+from time import time
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
@@ -58,7 +59,14 @@ try:
     # Esperar a que existan tarjetas de empleados
     wait.until(EC.presence_of_all_elements_located((By.CLASS_NAME, "orangehrm-directory-card")))
 
-    cards = driver.find_elements(By.CLASS_NAME, "orangehrm-directory-card")
+    prev_count = 0
+    while True:
+        cards = driver.find_elements(By.CLASS_NAME, "orangehrm-directory-card")
+        if len(cards) == prev_count:
+            break  # ya no cargan más
+        prev_count = len(cards)
+        driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+        time.sleep(2)  # dar tiempo a que carguen
     print(f"Se encontraron {len(cards)} empleados")
 
     employees = []
