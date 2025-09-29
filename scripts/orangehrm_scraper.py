@@ -38,7 +38,7 @@ try:
 
     # ---- Ir a Directory ----
     directory_menu = wait.until(
-        EC.element_to_be_clickable((By.LINK_TEXT, "Directory"))
+        EC.element_to_be_clickable((By.XPATH, "//span[normalize-space()='Directory']"))
     )
     directory_menu.click()
 
