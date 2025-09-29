@@ -11,6 +11,7 @@ opts = Options()
 opts.add_argument("--headless=new")
 opts.add_argument("--no-sandbox")
 opts.add_argument("--disable-dev-shm-usage")
+opts.add_argument("--window-size=1920,1080")
 
 service = Service("/usr/bin/chromedriver")
 driver = webdriver.Chrome(service=service, options=opts)
@@ -35,14 +36,21 @@ try:
     login_btn.click()
 
     print("Login realizado...")
+    
+    # Esperar a que el menú lateral exista
+    wait.until(EC.presence_of_element_located((By.CLASS_NAME, "oxd-main-menu")))
 
-    # ---- Ir a Directory ----
+  # Ahora buscar Directory de forma robusta
     directory_menu = wait.until(
         EC.element_to_be_clickable((
             By.XPATH,
-            "//span[@class='oxd-text oxd-text--span oxd-main-menu-item--name' and normalize-space()='Directory']"
+            "//a[contains(@href, '/directory/viewDirectory')]"
         ))
     )
+    
+    
+   # Asegurarse de que está visible en viewport
+    driver.execute_script("arguments[0].scrollIntoView(true);", directory_menu)
     directory_menu.click()
 
     print("Entramos en Directory...")
