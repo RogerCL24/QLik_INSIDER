@@ -38,9 +38,10 @@ try:
 
     # ---- Ir a Directory ----
     directory_menu = wait.until(
-        EC.element_to_be_clickable((By.CSS_SELECTOR,
-        "#app div.oxd-layout-navigation aside nav ul > li:nth-child(9) a span"
-    ))
+        EC.element_to_be_clickable((
+            By.XPATH,
+            "//span[@class='oxd-text oxd-text--span oxd-main-menu-item--name' and normalize-space()='Directory']"
+        ))
     )
     directory_menu.click()
 
