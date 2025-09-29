@@ -35,30 +35,25 @@ try:
     login_btn.click()
 
     print("Login realizado...")
-    
-    print("URL actual tras login:", driver.current_url)
-    print("HTML visible:\n", driver.page_source[:1000])
 
     # ---- Ir a Directory ----
     directory_menu = wait.until(
-        EC.element_to_be_clickable((By.XPATH, "//span[normalize-space()='Directory']"))
+        EC.element_to_be_clickable((By.CSS_SELECTOR,
+        "#app div.oxd-layout-navigation aside nav ul > li:nth-child(9) a span"
+    ))
     )
     directory_menu.click()
 
     print("Entramos en Directory...")
 
     # ---- Esperar a la tabla ----
-    table_rows = wait.until(
-        EC.presence_of_all_elements_located(
-            (By.CSS_SELECTOR, "div.oxd-table-body div.oxd-table-card")
-        )
-    )
+    wait.until(EC.presence_of_element_located((By.CLASS_NAME, "oxd-table")))
 
-    print(f"Encontradas {len(table_rows)} filas de empleados")
-
+    rows = driver.find_elements(By.CSS_SELECTOR, ".oxd-table-body .oxd-table-row")
+    print(f"Se encontraron {len(rows)} empleados")
     # ---- Extraer datos ----
     employees = []
-    for row in table_rows:
+    for row in rows:
         try:
             name = row.find_element(By.CSS_SELECTOR, "div:nth-child(2)").text
             job_title = row.find_element(By.CSS_SELECTOR, "div:nth-child(3)").text
